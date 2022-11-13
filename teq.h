@@ -34,9 +34,9 @@ extern "C"
     enum TEQ_SM_T
     {
         TEQ_SM_IDLE = 0,
-        TEQ_SM_WAIT,
-        TEQ_SM_SCHED,
-        TEQ_SM_RUN
+        TEQ_SM_WAIT,  // wait to be scheduled
+        TEQ_SM_SCHED, // ready to run (loop aways in this mode)
+        TEQ_SM_RUN    // running now
     };
 
     typedef enum TEQ_MODE
@@ -100,14 +100,14 @@ extern "C"
     teq_ret teq_create_loop_job(uint8_t *job_handler, job_cb cb, uint8_t pri, uint32_t period, char *des);
 
     /*
-     * teq_create_oneshot_job invoked to create a oneshot job.
+     * teq_create_oneshot_job invoked to create a oneshot job. The job will not run until teq_sched is called.
      * job_handler: job id for sched
      * cb: job callback which is a function pointer.
-     * arg: job callback parameter.
      * pri: job's priority bigger is higher.
      * des: job's name, for debug.
      */
-    teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, void *arg, uint8_t pri, char *des);
+    teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, uint8_t pri, char *des);
+
     /*
      * teq_sched sched a job to runnable
      * id: job id which to run.

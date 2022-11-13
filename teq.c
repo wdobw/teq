@@ -187,7 +187,7 @@ teq_ret teq_create_loop_job(uint8_t *job_handler, job_cb cb, uint8_t pri, uint32
     return teq_add_job(job_handler, cb, NULL, pri, TEQ_LOOP, period, des);
 }
 
-teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, void *arg, uint8_t pri, char *des)
+teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, uint8_t pri, char *des)
 {
-    return teq_add_job(job_handler, cb, arg, pri, TEQ_ONESHOT, 0, des);
+    return teq_add_job(job_handler, cb, NULL, pri, TEQ_ONESHOT, 0, des);
 }
