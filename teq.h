@@ -15,12 +15,6 @@ extern "C"
 #define SYSTICK_FREQ 1000 // set hardware timer freq
 #define TEQ_JOB_MAX 8     // numbers of job
 
-#define TEQ_SYSTEM_JOB 0
-#define TEQ_SHELF_JOB 1
-#define TEQ_UART_JOB 2
-#define TEQ_KEY_JOB 3
-#define TEQ_SENSOR_JOB 4
-
     enum TEQ_PRI
     {
         TEQ_PRI_MUTE = 0,
@@ -32,9 +26,9 @@ extern "C"
     enum TEQ_RET_E
     {
         TEQ_OK,
-        TEQ_ERROR,
-        TEQ_FULL,
-        TEQ_DISABLE
+        TEQ_ERROR = -1,
+        TEQ_FULL = -2,
+        TEQ_DISABLE = -3
     };
 
     enum TEQ_SM_T
@@ -93,8 +87,27 @@ extern "C"
      *        in loop mode job will delay at least 1 system tick to run and repeat.
      * des: job's name, for debug.
      */
-    teq_ret teq_add_job(uint8_t id, job_cb cb, void *data, uint8_t pri, TEQ_MODE_TYPE mode, uint32_t delay, char *des);
+    teq_ret teq_add_job(uint8_t *id, job_cb cb, void *data, uint8_t pri, TEQ_MODE_TYPE mode, uint32_t delay, char *des);
 
+    /*
+     * teq_create_loop_job invoked to create a loop running job.
+     * job_handler: job id for sched
+     * cb: job callback which is a function pointer.
+     * pri: job's priority bigger is higher.
+     * period: job will run after period ticks and repeatly.
+     * des: job's name, for debug.
+     */
+    teq_ret teq_create_loop_job(uint8_t *job_handler, job_cb cb, uint8_t pri, uint32_t period, char *des);
+
+    /*
+     * teq_create_oneshot_job invoked to create a oneshot job.
+     * job_handler: job id for sched
+     * cb: job callback which is a function pointer.
+     * arg: job callback parameter.
+     * pri: job's priority bigger is higher.
+     * des: job's name, for debug.
+     */
+    teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, void *arg, uint8_t pri, char *des);
     /*
      * teq_sched sched a job to runnable
      * id: job id which to run.
