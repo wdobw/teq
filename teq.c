@@ -51,6 +51,10 @@ static void teq_check(void)
         }
 
         (job->func)(job->args);
+        if (tick_get)
+        {
+            sys_tick = tick_get();
+        }
         if (job->mode == TEQ_LOOP)
         {
             job->timer = sys_tick + job->delay;
@@ -132,6 +136,10 @@ teq_ret teq_sched(uint8_t id, void *arg, uint16_t delay)
     {
         if (id < TEQ_JOB_MAX && teq_queue[id].status == TEQ_SM_WAIT)
         {
+            if (tick_get)
+            {
+                sys_tick = tick_get();
+            }
             teq_queue[id].status = TEQ_SM_SCHED;
             teq_queue[id].args = arg;
             teq_queue[id].timer = sys_tick + delay;
