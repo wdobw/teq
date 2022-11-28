@@ -65,9 +65,8 @@ extern "C"
     /*
      * teq_init invoked befor any teq function.
      * This function will initial queue buffer and enable teq called function.
-     * f: The fetching system tick function
      */
-    teq_ret teq_init(tick_func f);
+    teq_ret teq_init(void);
 
     /*
      * teq_run invoked after teq_init and some scheduled job added.
@@ -125,6 +124,11 @@ extern "C"
      * teq_get_idle_time to get idle time for analyzing CPU load
      */
     uint32_t teq_get_idle_time(void);
+
+    /*
+     * teq_tick_inc called by system tick irq
+     */
+    void teq_tick_inc(void);
 
 #ifdef __cplusplus
 }

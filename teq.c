@@ -11,7 +11,6 @@ static teq_job_t teq_queue[TEQ_JOB_MAX];
 static uint8_t teq_start;
 static uint64_t sys_tick;
 static uint32_t idle_time, idle_cnt;
-static tick_func tick_get;
 static uint8_t job_cnt;
 
 static teq_job_t *pop_high()
@@ -51,10 +50,7 @@ static void teq_check(void)
         }
 
         (job->func)(job->args);
-        if (tick_get)
-        {
-            sys_tick = tick_get();
-        }
+
         if (job->mode == TEQ_LOOP)
         {
             job->timer = sys_tick + job->delay;
@@ -81,10 +77,6 @@ static void teq_idle(void *arg)
             idle_cnt += (sys_tick - last_tick);
         }
         __asm("wfi");
-        if (tick_get)
-        {
-            sys_tick = tick_get();
-        }
     }
 }
 
@@ -136,10 +128,6 @@ teq_ret teq_sched(uint8_t id, void *arg, uint16_t delay)
     {
         if (id < TEQ_JOB_MAX && teq_queue[id].status == TEQ_SM_WAIT)
         {
-            if (tick_get)
-            {
-                sys_tick = tick_get();
-            }
             teq_queue[id].status = TEQ_SM_SCHED;
             teq_queue[id].args = arg;
             teq_queue[id].timer = sys_tick + delay;
@@ -149,7 +137,7 @@ teq_ret teq_sched(uint8_t id, void *arg, uint16_t delay)
     return TEQ_ERROR;
 }
 
-teq_ret teq_init(tick_func f)
+teq_ret teq_init(void)
 {
     if (TEQ_JOB_MAX <= 0)
     {
@@ -174,7 +162,6 @@ teq_ret teq_init(tick_func f)
         teq_queue[0].pre = &teq_queue[TEQ_JOB_MAX - 1];
     }
 
-    tick_get = f;
     return TEQ_OK;
 }
 
@@ -198,4 +185,9 @@ teq_ret teq_create_loop_job(uint8_t *job_handler, job_cb cb, uint8_t pri, uint32
 teq_ret teq_create_oneshot_job(uint8_t *job_handler, job_cb cb, uint8_t pri, char *des)
 {
     return teq_add_job(job_handler, cb, NULL, pri, TEQ_ONESHOT, 0, des);
+}
+
+void teq_tick_inc(void)
+{
+    sys_tick++;
 }
